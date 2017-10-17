@@ -19,3 +19,5 @@ Route::get('/', function () {
 Route::get('/listaService', "ServiceController@getServices" );
 Route::get('/listaPecs', "PecController@getPecs" );
 Route::get('/listaMarcas', "MarcaController@getMarcas" );
+Route::get('/listaModelos', "ModeloController@getModelos" );
+Route::get('/listaTencao', "TencaoController@getTencao" );
