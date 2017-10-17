@@ -21,3 +21,7 @@ Route::get('/listaPecs', "PecController@getPecs" );
 Route::get('/listaMarcas', "MarcaController@getMarcas" );
 Route::get('/listaModelos', "ModeloController@getModelos" );
 Route::get('/listaTencao', "TencaoController@getTencao" );
+Route::get('/listaNvEcon', "NivelEconoController@getNvEcon" );
+Route::get('/listaBTus', "CapacidadeController@getBTU" );
+Route::get('/listaAllAr', "RefrigeradoresController@getAllAr" );
+Route::get('/listaServPen', "ServPenController@getServPen" );
