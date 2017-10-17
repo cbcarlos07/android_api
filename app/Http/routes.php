@@ -17,3 +17,4 @@ Route::get('/', function () {
 
 
 Route::get('/listaService', "ServiceController@getServices" );
+Route::get('/listaPecs', "PecController@getPecs" );
