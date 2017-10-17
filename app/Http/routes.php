@@ -25,3 +25,4 @@ Route::get('/listaNvEcon', "NivelEconoController@getNvEcon" );
 Route::get('/listaBTus', "CapacidadeController@getBTU" );
 Route::get('/listaAllAr', "RefrigeradoresController@getAllAr" );
 Route::get('/listaServPen', "ServPenController@getServPen" );
+Route::get('/image/{img}', "ImageController@getImg" );
