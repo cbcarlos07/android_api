@@ -16,13 +16,13 @@ Route::get('/', function () {
 });
 
 
-Route::get('/listaService', "ServiceController@getServices" );
-Route::get('/listaPecs', "PecController@getPecs" );
-Route::get('/listaMarcas', "MarcaController@getMarcas" );
-Route::get('/listaModelos', "ModeloController@getModelos" );
-Route::get('/listaTencao', "TencaoController@getTencao" );
-Route::get('/listaNvEcon', "NivelEconoController@getNvEcon" );
-Route::get('/listaBTus', "CapacidadeController@getBTU" );
-Route::get('/listaAllAr', "RefrigeradoresController@getAllAr" );
-Route::get('/listaServPen', "ServPenController@getServPen" );
-Route::get('/image/{img}', "ImageController@getImg" );
+Route::get('/listaService', "GeralController@getServices" );
+Route::get('/listaPecs', "GeralController@getPecs" );
+Route::get('/listaMarcas', "GeralController@getMarcas" );
+Route::get('/listaModelos', "GeralController@getModelos" );
+Route::get('/listaTencao', "GeralController@getTencao" );
+Route::get('/listaNvEcon', "GeralController@getNvEcon" );
+Route::get('/listaBTus', "GeralController@getBTU" );
+Route::get('/listaAllAr', "GeralController@getAllAr" );
+Route::get('/listaServPen', "GeralController@getServPen" );
+Route::get('/image/{img}', "GeralController@getImg" );

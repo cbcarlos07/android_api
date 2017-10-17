@@ -1,1 +1,1 @@
-<img src="{{ url("img/$img.jpg") }}">
+<img src="{{ url("img/$img") }}">
