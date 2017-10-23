@@ -26,3 +26,4 @@ Route::get('/listaBTus', "GeralController@getBTU" );
 Route::get('/listaAllAr', "GeralController@getAllAr" );
 Route::get('/listaServPen', "GeralController@getServPen" );
 Route::get('/image/{img}', "GeralController@getImg" );
+Route::post('/login', "GeralController@getUserByEmailAndPasswordAndMatricula" );
