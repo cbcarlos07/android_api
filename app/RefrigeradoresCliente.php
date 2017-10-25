@@ -8,5 +8,6 @@ class RefrigeradoresCliente extends Model
 {
     protected $table = "refrigeradores_clientes";
     protected $primaryKey = "id_refri";
+    public $timestamps = false;
 
 }

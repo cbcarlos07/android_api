@@ -6,7 +6,9 @@ namespace App\Http\Controllers;
 
 
 use App\Http\Requests;
+use App\OrdemService;
 use App\PecsProbServFunc;
+use App\PosiFunc;
 use App\ServicesFunc;
 use Request;
 use App\CapaciTermicaAr;
@@ -587,6 +589,252 @@ class GeralController extends Controller
                 $retorno = array(
                     "error"     => true,
                     "error_msg" => "Erro ao salvar dados"
+                );
+            }
+            echo json_encode( $retorno );
+        }
+
+    }
+
+    public function addOS(){
+        // receiving the post params
+        $id_cli      = Request::input('id_cliente');
+        $matri_func  = Request::input('matri_func');
+        $tipo_manu   = Request::input('tipo_manu');
+        $obs         = Request::input('obs');
+        $data_       = Request::input('data');
+        $hora_ini    = Request::input('hora_ini');
+        $hora_fin    = Request::input('hora_fin');
+
+        /*$data_t = str_replace('/','-', $data_);
+        $data = date( 'Y-m-d', strtotime( $data_t ) );*/
+
+        $retorno = array();
+        $validator = Validator::make(
+            [
+                'id'     => $id_cli,
+                'mat'    => $matri_func,
+                'tipo'   => $tipo_manu,
+                'obs'    => $obs,
+                'data'   => $data_,
+                'inicio' => $hora_ini,
+                'fim'    => $hora_fin,
+            ],
+            [
+                'id'     => 'required',
+                'mat'    => 'required',
+                'tipo'   => 'required',
+                'obs'    => 'required',
+                'data'   => 'required',
+                'inicio' => 'required',
+                'fim'    => 'required',
+            ],
+            [
+                'required'  => ':attribute é obrigatório.'
+            ]
+        );
+        if( $validator->fails() ){
+
+            $retorno = array(
+                "error"      => true,
+                "error_msg" => "dados inseridos (id_cliente, matri_func, obs or tipo_manu) estão incorretos!"
+            );
+
+            echo json_encode( $retorno );
+        }else{
+            //id_os, id_cliente, matri_func, tipo_manu, obs, data, hora_ini, hora_fin
+            $objeto = new OrdemService();
+            $objeto->id_cliente = $id_cli;
+            $objeto->matri_func = $matri_func;
+            $objeto->tipo_manu  = $tipo_manu;
+            $objeto->obs        = $obs;
+            $objeto->data       = $data_;
+            $objeto->hora_ini   = $hora_ini;
+            $objeto->hora_fin   = $hora_fin;
+
+            if( $objeto->save() ){
+                $retorno = array(
+                    "error"     => false,
+                    "error_msg" => "Dados inseridos com sucesso!"
+                );
+            }else{
+                $retorno = array(
+                    "error"     => true,
+                    "error_msg" => "Erro ao salvar dados"
+                );
+            }
+            echo json_encode( $retorno );
+        }
+
+    }
+
+    public function updateDescriAr(){
+        // receiving the post params
+        $id_ar= $_POST['id_ar'];
+        $peso = $_POST['peso'];
+        $has_control = $_POST['has_control'];
+        $has_exaustor = $_POST['has_exaustor'];
+        $saida_ar = $_POST['saida_ar'];
+        $capaci_termica = $_POST['capaci_termica'];
+        $tencao_tomada = $_POST['tencao_tomada'];
+        $has_timer = $_POST['has_timer'];
+        $tipo_modelo = $_POST['tipo_modelo'];
+        $marca = $_POST['marca'];
+        $temp_uso = $_POST['temp_uso'];
+        $nivel_econo = $_POST['nivel_econo'];
+        $tamanho = $_POST['tamanho'];
+        $foto1 = $_POST['foto1'];
+        $foto2 = $_POST['foto2'];
+        $foto3 = $_POST['foto3'];
+
+        $retorno = array();
+        $validator = Validator::make(
+            [
+                'id'             => $id_ar,
+                'peso'           => $peso,
+                'has_control'    => $has_control,
+                'has_exaustor'   => $has_exaustor,
+                'saida_ar'       => $saida_ar,
+                'capaci_termica' => $capaci_termica,
+                'tencao_tomada'  => $tencao_tomada,
+                'has_timer'      => $has_timer,
+                'tipo_modelo'    => $tipo_modelo,
+                'marca'          => $marca,
+                'temp_uso'       => $temp_uso,
+                'nivel_econo'    => $nivel_econo,
+                'tamanho'        => $tamanho,
+                'foto1'          => $foto1,
+                'foto2'          => $foto2,
+                'foto3'          => $foto3,
+            ],
+            [
+                'id'             => 'required',
+                'peso'           => 'required',
+                'has_control'    => 'required',
+                'has_exaustor'   => 'required',
+                'saida_ar'       => 'required',
+                'capaci_termica' => 'required',
+                'tencao_tomada'  => 'required',
+                'has_timer'      => 'required',
+                'tipo_modelo'    => 'required',
+                'marca'          => 'required',
+                'temp_uso'       => 'required',
+                'nivel_econo'    => 'required',
+                'tamanho'        => 'required',
+                'foto1'          => 'required',
+                'foto2'          => 'required',
+                'foto3'          => 'required'
+            ],
+            [
+                'required'  => ':attribute é obrigatório.'
+            ]
+        );
+        if( $validator->fails() ){
+
+            $retorno = array(
+                "error"      => true,
+                "error_msg" => "dados inseridos  estão incorretos! POSTs"
+            );
+
+            echo json_encode( $retorno );
+        }else{
+            /*
+             * UPDATE refrigeradores_clientes SET peso = ?, has_control = ?, has_exaustor = ?, saida_ar = ?, nivel_econo = ?,tamanho = ?,
+               capaci_termica = ?, tencao_tomada = ?, has_timer = ?, tipo_modelo = ?, marca = ?, temp_uso = ?, foto1 = ?,
+               foto2 = ?, foto3 = ?  WHERE id_refri LIKE ?");
+             */
+            $objeto =  RefrigeradoresCliente::find( $id_ar );
+            $objeto->peso           = $peso;
+            $objeto->has_control    = $has_control;
+            $objeto->has_exaustor   = $has_exaustor;
+            $objeto->saida_ar       = $saida_ar;
+            $objeto->nivel_econo    = $nivel_econo;
+            $objeto->tamanho        = $tamanho;
+            $objeto->capaci_termica = $capaci_termica;
+            $objeto->tencao_tomada  = $tencao_tomada;
+            $objeto->has_timer      = $has_timer;
+            $objeto->tipo_modelo    = $tipo_modelo;
+            $objeto->marca          = $marca;
+            $objeto->temp_uso       = $temp_uso;
+            $objeto->foto1          = $foto1;
+            $objeto->foto2          = $foto2;
+            $objeto->foto3          = $foto3;
+
+
+            if( $objeto->save() ){
+                $retorno = array(
+                    "error"     => false,
+                    "error_msg" => "update de dados do ar condicionado do cliente feita com sucesso!!!!"
+                );
+            }else{
+                $retorno = array(
+                    "error"     => true,
+                    "error_msg" => "Ocorreu um erro ao atualisar dados do AR"
+                );
+            }
+            echo json_encode( $retorno );
+        }
+
+    }
+
+    public function addPosiFunc(){
+        // receiving the post params
+        $matriFunc = Request::input('matriFunc');
+        $latitude  = Request::input('latitude');
+        $longitude = Request::input('longitude');
+        $dataPosi  = Request::input('dataPosi');
+        $horaPosi  = Request::input('horaPosi');
+
+        $retorno = array();
+        $validator = Validator::make(
+            [
+                'matricula'  => $matriFunc,
+                'latitude'   => $latitude,
+                'longitude'  => $longitude,
+                'dataPosi'   => $dataPosi,
+                'horaPosi'   => $horaPosi
+
+            ],
+            [
+                'matricula'  => 'required',
+                'latitude'   => 'required',
+                'longitude'  => 'required',
+                'dataPosi'   => 'required',
+                'horaPosi'   => 'required'
+            ],
+            [
+                'required'  => ':attribute é obrigatório.'
+            ]
+        );
+        if( $validator->fails() ){
+
+            $retorno = array(
+                "error"      => true,
+                "error_msg" => "dados inseridos (nome, modelo, marca) estão incorretos!"
+            );
+
+            echo json_encode( $retorno );
+        }else{
+            /*
+             cod, matriFunc, latitude, longitude, dataPosi, horaPosi;
+             */
+            $objeto =  new PosiFunc(  );
+            $objeto->matriFunc    = $matriFunc;
+            $objeto->latitude     = $latitude;
+            $objeto->longitude    = $longitude;
+            $objeto->dataPosi     = $dataPosi;
+            $objeto->horaPosi     = $horaPosi;
+
+
+            if( $objeto->save() ){
+                $retorno = array(
+                    "error"     => false,
+                    "error_msg" => "Dados inseridos com sucesso!"
+                );
+            }else{
+                $retorno = array(
+                    "error"     => true,
+                    "error_msg" => "Ocorreu um erro ao salvar dados"
                 );
             }
             echo json_encode( $retorno );

@@ -35,3 +35,6 @@ Route::post('/inserirPcsProbServ', "GeralController@addPcsProbleOS" );
 Route::post('/inserirPecs', "GeralController@addPecs" );
 Route::post('/inserirServices', "GeralController@addServices" );
 Route::post('/inserirServicesFunc', "GeralController@addServicesFuncOS" );
+Route::post('/inserirOS', "GeralController@addOS" );
+Route::post('/alterarDescriAr', "GeralController@updateDescriAr" );
+Route::post('/inserirPosiFunc', "GeralController@addPosiFunc" );
