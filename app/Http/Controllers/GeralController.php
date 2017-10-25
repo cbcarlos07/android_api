@@ -6,11 +6,12 @@ namespace App\Http\Controllers;
 
 
 use App\Http\Requests;
+use Illuminate\Http\Request;
 use App\OrdemService;
 use App\PecsProbServFunc;
 use App\PosiFunc;
 use App\ServicesFunc;
-use Request;
+//use Request;
 use App\CapaciTermicaAr;
 use App\MarcasAr;
 use App\ModelosAr;
@@ -22,6 +23,7 @@ use App\ServPen;
 use App\TencaoTomadaAr;
 use App\UserFunc;
 use Validator;
+//use Symfony\Component\HttpFoundation\Request;
 class GeralController extends Controller
 {
     public function getBTU(){
@@ -840,6 +842,43 @@ class GeralController extends Controller
             echo json_encode( $retorno );
         }
 
+    }
+
+    public function uploadImage( Request $request ){
+        //$destinationPath = public_path('uploads');
+
+        //Image::make($avatar)->resize(300,300)->save($destinationPath.'/'.$filename);
+        //$request = \Symfony\Component\HttpFoundation\Request::instance();
+
+        $content = $request->getContent();
+
+        $json = json_decode( $content );
+
+
+        $name = $json["name"]; //within square bracket should be same as Utils.imageName & Utils.image
+        $image = $json["image"];
+
+        $response = array();
+
+        $decodedImage = base64_decode( $image );
+
+        $return = file_put_contents("img/".$name.".JPG", $decodedImage);
+
+        //Image::make( $image )->resize(300,300)->save($destinationPath.'/'.$filename);
+
+        if($return !== false){
+            $response['success'] = 1;
+            $response['message'] = "Image Uploaded Successfully";
+            $response['img'] = $image;
+
+        }else{
+            $response['success'] = 0;
+            $response['message'] = "Image Uploaded Failed";
+        }
+
+
+        //echo json_encode($response);
+        echo json_encode( $json );
     }
 
 

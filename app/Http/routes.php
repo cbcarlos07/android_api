@@ -38,3 +38,4 @@ Route::post('/inserirServicesFunc', "GeralController@addServicesFuncOS" );
 Route::post('/inserirOS', "GeralController@addOS" );
 Route::post('/alterarDescriAr', "GeralController@updateDescriAr" );
 Route::post('/inserirPosiFunc', "GeralController@addPosiFunc" );
+Route::post('/uploadImage', "GeralController@uploadImage" );
