@@ -4,7 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Ordem_service extends Model
+class OrdemService extends Model
 {
     protected $table = "ordem_service";
 }

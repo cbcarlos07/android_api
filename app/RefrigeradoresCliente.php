@@ -4,7 +4,9 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Refrigeradores_cliente extends Model
+class RefrigeradoresCliente extends Model
 {
     protected $table = "refrigeradores_clientes";
+    protected $primaryKey = "id_refri";
+
 }
