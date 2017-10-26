@@ -23,6 +23,7 @@ use App\ServPen;
 use App\TencaoTomadaAr;
 use App\UserFunc;
 use Validator;
+use Illuminate\Support\Facades\DB;
 //use Symfony\Component\HttpFoundation\Request;
 class GeralController extends Controller
 {
@@ -65,9 +66,148 @@ class GeralController extends Controller
         return json_encode( $services );
     }
 
-    public function getServPen(){
-        $objeto = ServPen::all();
-        return json_encode( $objeto );
+    public function getServPen( Request $request ){
+        $status    = $request->input( 'status' );
+        $matriFunc = $request->input( 'matriFunc' );
+
+        $retorno = array();
+        $dados   = array();
+
+
+        $validator = Validator::make(
+            [
+                'status'      => $status,
+                'matricula'   => $matriFunc
+
+            ],
+            [
+                'status'    => 'required',
+                'matricula' => 'required',
+            ],
+            [
+                'required'  => ':attribute é obrigatório.'
+            ]
+        );
+        if( $validator->fails() ){
+
+            $retorno = array(
+                "error"      => true,
+                "error_msg" => "Parametro do Status Incorreto!"
+            );
+
+            echo json_encode( $retorno );
+        }else {
+
+
+            if( $matriFunc == null ){
+                $sql = "SELECT id_serv_pen, cliente, complemento, serv_pen.ender, 
+                               cep, lotacionamento, statusServ,latitude, longitude,
+                               date_format(data_serv,'%d/%m/%Y') as data_serv, hora_serv,descriCliProblem, descriTecniProblem, descriCliRefrigera,
+                               nome, tipo, celular, fone_fixo, codRefriCli 
+                        FROM serv_pen,clientes 
+                        WHERE id_cli=cliente 
+                          AND statusServ LIKE ? 
+                        ORDER BY `serv_pen`.`data_serv` ASC";
+                $objeto = DB::select( $sql, array( $status ) );
+                 /*$objeto = ServPen::join( 'clientes', 'cliente', '=', 'id_cli' )
+                     ->select('id_serv_pen','cliente','complemento', 'serv_pen.ender', 'cep','lotacionamento',
+                         'statusServ', 'latitude','longitude',DB::raw('DATE_FORMAT(data_serv, "%d/%m/%Y") as data_serv'),
+                         'hora_serv', 'descriCliProblem', 'descriTecniProblem','descriCliRefrigera', 'nome', 'tipo','celular',
+                         'fone_fixo','codRefriCli')
+                     ->where('statusServ', $status )
+                     ->get();*/
+                /*$objeto = ServPen::with('clientes')
+                    ->select('id_serv_pen','cliente','complemento', 'serv_pen.ender', 'cep','lotacionamento',
+                        'statusServ', 'latitude','longitude',DB::raw('DATE_FORMAT(data_serv, "%d/%m/%Y") as data_serv'),
+                        'hora_serv', 'descriCliProblem', 'descriTecniProblem','descriCliRefrigera', 'nome', 'tipo','celular',
+                        'fone_fixo','codRefriCli')
+                    ->whereColumn([
+                        ['id_cli', 'cliente'],
+                        ['statusServ', $status ]
+                    ])
+                    ->get();*/
+                //$objeto = ServPen::all();
+
+            }else{
+                $sql = "SELECT id_serv_pen, cliente, complemento, serv_pen.ender, 
+                               cep, lotacionamento, statusServ,latitude, longitude,
+                               date_format(data_serv,'%d/%m/%Y') as data_serv, hora_serv,descriCliProblem, descriTecniProblem, descriCliRefrigera,
+                               nome, tipo, celular, fone_fixo, codRefriCli 
+                        FROM serv_pen,clientes 
+                        WHERE id_cli=cliente 
+                          AND statusServ LIKE ? AND MatriFuncTec LIKE ?
+                        ORDER BY `serv_pen`.`data_serv` ASC";
+                $objeto = DB::select( $sql, array( $status, $matriFunc ) );
+                /*$objeto = ServPen::join( 'clientes', 'cliente', '=', 'id_cli' )
+                    ->select('id_serv_pen','cliente','complemento', 'serv_pen.ender', 'cep','lotacionamento',
+                        'statusServ', 'latitude','longitude',DB::raw('DATE_FORMAT(data_serv, "%d/%m/%Y") as data_serv'),
+                        'hora_serv', 'descriCliProblem', 'descriTecniProblem','descriCliRefrigera', 'nome', 'tipo','celular',
+                        'fone_fixo','codRefriCli')
+                    ->whereColumn([
+                        ['statusServ', $status],
+                        ['MatriFuncTec', $matriFunc]
+
+                    ])
+                    ->get();*/
+              /*  $objeto = ServPen::with('clientes')
+                    ->select('id_serv_pen','cliente','complemento', 'serv_pen.ender', 'cep','lotacionamento',
+                        'statusServ', 'latitude','longitude',DB::raw('DATE_FORMAT(data_serv, "%d/%m/%Y") as data_serv'),
+                        'hora_serv', 'descriCliProblem', 'descriTecniProblem','descriCliRefrigera', 'nome', 'tipo','celular',
+                        'fone_fixo','codRefriCli')
+                    ->whereColumn([
+                        ['statusServ',  $status],
+                        ['MatriFuncTec',  $matriFunc]
+
+                    ])
+                    ->get();*/
+                //$objeto = ServPen::all();
+            }
+
+            if( sizeof( $objeto ) > 0 ){
+                foreach ( $objeto as $item) {
+
+                    $dados[] = array(
+                        "uid"                => $item->id_serv_pen,
+                        "latitude"           => $item->latitude,
+                        "longitude"          => $item->longitude,
+                        "cliente"            => $item->cliente,
+                        "lotacionamento"     => $item->lotacionamento,
+                        "ender"              => $item->ender,
+                        "complemento"        => $item->complemento,
+                        "cep"                => $item->cep,
+                        "data_serv"          => $item->data_serv,
+                        "hora_serv"          => $item->hora_serv,
+                        "descriCliProblem"   => $item->descriCliProblem,
+                        "descriTecniProblem" => $item->descriTecniProblem,
+                        "descriCliRefrigera" => $item->descriCliRefrigera,
+                        "statusServ"         => $item->statusServ,
+                        "nome"               => $item->nome,
+                        "tipo"               => $item->tipo,
+                        "fone1"              => $item->celular,
+                        "fone2"              => $item->fone_fixo,
+                        "id_refriCli"        => $item->codRefriCli,
+                    );
+
+                }
+                $retorno = array(
+                    "error" => false,
+                    "data"  => $dados
+                );
+
+            }else{
+                $retorno = array(
+                    "error" => true,
+                    "error_list" => "Lista Vazia!"
+                );
+            }
+
+
+
+
+            return json_encode( $retorno );
+        }
+
+
     }
 
     public function getTencao(){
@@ -75,71 +215,109 @@ class GeralController extends Controller
         return json_encode( $tencao );
     }
 
-    public function getUserByEmailAndPasswordAndMatricula(  ){
+    public function getUserByEmailAndPasswordAndMatricula( Request $request ){
 
-        $email     = Request::input('email');
-        $pwd       = Request::input('password');
-        $matricula = Request::input('matricula');
+        $email     = $request->input('email');
+        $pwd       = $request->input('password');
+        $matricula = $request->input('matricula');
        // echo $matricula;
-        $user_func = UserFunc::where('email', $email)
-                            ->orWhere('matricula', $matricula)
-                            ->get();
+        $retorno = array();
+        $validator = Validator::make(
+            [
+                'email'     => $email,
+                'pwd'       => $pwd,
+                'matricula' => $matricula
 
-        $tetorno = array();
-        if( sizeof( $user_func ) > 0 ){
-            $salt = "";
-            $encrypted_password = "";
-            $id         = 0;
-            $nome       = "";
-            $email      = "";
-            $created_at = "";
-            $updated_at = "";
+            ],
+            [
+                'email'     => 'required',
+                'pwd'       => 'required',
+                'matricula' => 'required'
+            ],
+            [
+                'required'  => ':attribute é obrigatório.'
+            ]
+        );
+        if( $validator->fails() ){
 
-            foreach ( $user_func as $user ){
-                $salt               = $user->salt;
-                $encrypted_password = $user->encrypted_password;
-                $id                 = $user->unique_id;
-                $nome               = $user->name;
-                $email              = $user->email;
-                $matricula          = $user->matricula;
-                $created_at         = $user->created_at;
-                $updated_at         = $user->updated_at;
-
-            }
-
-            $hash = $this->checkhashSSHA( $salt, $pwd );
-
-            if( $encrypted_password == $hash ){
-                $tetorno = array(
-                    'error' => false,
-                    'uid'   => $id,
-                    'user'  => array(
-                        'name'       => $nome,
-                        'matricula'  => $matricula,
-                        'email'      => $email,
-                        'created_at' => $created_at,
-                        'updated_at' => $updated_at
-                    ),
-                );
-
-            }
-
-        }else{
-            $tetorno = array(
-                'error' => true,
-                'error_msg' => 'Login ou Senha incorretos!'
-
+            $retorno = array(
+                "error"      => true,
+                "error_msg" => "Login ou Senha incorretos!"
             );
 
 
+        }else {
+            $user_func = UserFunc::where('email', $email)
+                ->orWhere('matricula', $matricula)
+                ->get();
+
+            //echo sizeof( $user_func );
+            if( sizeof( $user_func ) > 0 ){
+
+                $salt = "";
+                $encrypted_password = "";
+                $id         = 0;
+                $nome       = "";
+                $email      = "";
+                $created_at = "";
+                $updated_at = "";
+
+                foreach ( $user_func as $user ){
+                    $salt               = $user->salt;
+                    $encrypted_password = $user->encrypted_password;
+                    $id                 = $user->unique_id;
+                    $nome               = $user->name;
+                    $email              = $user->email;
+                    $matricula          = $user->matricula;
+                    $created_at         = $user->created_at;
+                    $updated_at         = $user->updated_at;
+
+                }
+
+
+                $hash = $this->checkhashSSHA( $salt, $pwd );
+
+                if( $encrypted_password == $hash ){
+
+                    $retorno = array(
+                        'error' => false,
+                        'uid'   => $id,
+                        'user'  => array(
+                            'name'       => $nome,
+                            'matricula'  => $matricula,
+                            'email'      => $email,
+                            'created_at' => $created_at,
+                            'updated_at' => $updated_at
+                        ),
+                    );
+
+                }else{
+                    $retorno = array(
+                        'error' => true,
+                        'error_msg' => 'As credenciais do login estão com erro'
+
+                    );
+                }
+
+            }else{
+                $retorno = array(
+                    'error' => true,
+                    'error_msg' => 'Matricula ou email não foram encontradas'
+
+                );
+
+
+
+            }
 
         }
-        echo json_encode( $tetorno );
+        echo json_encode( $retorno );
+
     }
 
-    public function getArCli( ){
+    public function getArCli( Request $request ){
 
-        $id = Request::input('id_ar');
+        $id = $request->input('id_ar');
 
         $cliente = RefrigeradoresCliente::find( $id );
         //echo "Variavel: ".typeOf( $refrigeradores );
@@ -207,11 +385,11 @@ class GeralController extends Controller
 
     }
     
-    public function storeUser(){
-        $name      = Request::input('name');
-        $email     = Request::input('email');
-        $password  = Request::input('password');
-        $matricula = Request::input('matricula');
+    public function storeUser( Request $request ){
+        $name      = $request->input('name');
+        $email     = $request->input('email');
+        $password  = $request->input('password');
+        $matricula = $request->input('matricula');
 
         $validator = Validator::make(
             [
@@ -305,10 +483,10 @@ class GeralController extends Controller
         
     }
 
-    public function updateStatusServ(){
+    public function updateStatusServ( Request $request ){
         // receiving the post params
-        $id_serv  = Request::input('id_serv');
-        $new_serv = Request::input('newStatus');
+        $id_serv  = $request->input('id_serv');
+        $new_serv = $request->input('newStatus');
         $tetorno = array();
         $validator = Validator::make(
             [
@@ -351,9 +529,9 @@ class GeralController extends Controller
         echo json_encode( $tetorno );
     }
 
-    public function updateMatriFunc(){
-        $id         = Request::input('id_serv');
-        $matricula  = Request::input('newMatriFunc');
+    public function updateMatriFunc( Request $request ){
+        $id         = $request->input('id_serv');
+        $matricula  = $request->input('newMatriFunc');
         $retorno = array();
         $validator = Validator::make(
             [
@@ -398,9 +576,9 @@ class GeralController extends Controller
 
     }
 
-    public function addPcsProbleOS(){
-        $pc =   Request::input('id_pc');
-        $os =   Request::input('id_os');
+    public function addPcsProbleOS( Request $request ){
+        $pc =   $request->input('id_pc');
+        $os =   $request->input('id_os');
         $retorno = array();
         $validator = Validator::make(
             [
@@ -446,10 +624,10 @@ class GeralController extends Controller
 
     }
 
-    public function addPecs(){
-        $nome   = Request::input('nome');
-        $modelo = Request::input('modelo');
-        $marca  = Request::input('marca');
+    public function addPecs( Request $request ){
+        $nome   = $request->input('nome');
+        $modelo = $request->input('modelo');
+        $marca  = $request->input('marca');
         $retorno = array();
         $validator = Validator::make(
             [
@@ -498,10 +676,10 @@ class GeralController extends Controller
 
     }
 
-    public function addServices(){
-        $nome   = Request::input('nome');
-        $descricao = Request::input('descri');
-        $tempo  = Request::input('tempo');
+    public function addServices( Request $request ){
+        $nome   = $request->input('nome');
+        $descricao = $request->input('descri');
+        $tempo  = $request->input('tempo');
         $retorno = array();
         $validator = Validator::make(
             [
@@ -550,9 +728,9 @@ class GeralController extends Controller
 
     }
 
-    public function addServicesFuncOS(){
-        $service   = Request::input('id_services');
-        $os        = Request::input('id_os');
+    public function addServicesFuncOS( Request $request ){
+        $service   = $request->input('id_services');
+        $os        = $request->input('id_os');
 
         $retorno = array();
         $validator = Validator::make(
@@ -598,15 +776,15 @@ class GeralController extends Controller
 
     }
 
-    public function addOS(){
+    public function addOS( Request $request ){
         // receiving the post params
-        $id_cli      = Request::input('id_cliente');
-        $matri_func  = Request::input('matri_func');
-        $tipo_manu   = Request::input('tipo_manu');
-        $obs         = Request::input('obs');
-        $data_       = Request::input('data');
-        $hora_ini    = Request::input('hora_ini');
-        $hora_fin    = Request::input('hora_fin');
+        $id_cli      = $request->input('id_cliente');
+        $matri_func  = $request->input('matri_func');
+        $tipo_manu   = $request->input('tipo_manu');
+        $obs         = $request->input('obs');
+        $data_       = $request->input('data');
+        $hora_ini    = $request->input('hora_ini');
+        $hora_fin    = $request->input('hora_fin');
 
         /*$data_t = str_replace('/','-', $data_);
         $data = date( 'Y-m-d', strtotime( $data_t ) );*/
@@ -670,24 +848,24 @@ class GeralController extends Controller
 
     }
 
-    public function updateDescriAr(){
+    public function updateDescriAr( Request $request ){
         // receiving the post params
-        $id_ar= $_POST['id_ar'];
-        $peso = $_POST['peso'];
-        $has_control = $_POST['has_control'];
-        $has_exaustor = $_POST['has_exaustor'];
-        $saida_ar = $_POST['saida_ar'];
-        $capaci_termica = $_POST['capaci_termica'];
-        $tencao_tomada = $_POST['tencao_tomada'];
-        $has_timer = $_POST['has_timer'];
-        $tipo_modelo = $_POST['tipo_modelo'];
-        $marca = $_POST['marca'];
-        $temp_uso = $_POST['temp_uso'];
-        $nivel_econo = $_POST['nivel_econo'];
-        $tamanho = $_POST['tamanho'];
-        $foto1 = $_POST['foto1'];
-        $foto2 = $_POST['foto2'];
-        $foto3 = $_POST['foto3'];
+        $id_ar          = $request->input('id_ar');
+        $peso           = $request->input('peso');
+        $has_control    = $request->input('has_control');
+        $has_exaustor   = $request->input('has_exaustor');
+        $saida_ar       = $request->input('saida_ar');
+        $capaci_termica = $request->input('capaci_termica');
+        $tencao_tomada  = $request->input('tencao_tomada');
+        $has_timer      = $request->input('has_timer');
+        $tipo_modelo    = $request->input('tipo_modelo');
+        $marca          = $request->input('marca');
+        $temp_uso       = $request->input('temp_uso');
+        $nivel_econo    = $request->input('nivel_econo');
+        $tamanho        = $request->input('tamanho');
+        $foto1          = $request->input('foto1');
+        $foto2          = $request->input('foto2');
+        $foto3          = $request->input('foto3');
 
         $retorno = array();
         $validator = Validator::make(
@@ -779,13 +957,13 @@ class GeralController extends Controller
 
     }
 
-    public function addPosiFunc(){
+    public function addPosiFunc( Request $request ){
         // receiving the post params
-        $matriFunc = Request::input('matriFunc');
-        $latitude  = Request::input('latitude');
-        $longitude = Request::input('longitude');
-        $dataPosi  = Request::input('dataPosi');
-        $horaPosi  = Request::input('horaPosi');
+        $matriFunc = $request->input('matriFunc');
+        $latitude  = $request->input('latitude');
+        $longitude = $request->input('longitude');
+        $dataPosi  = $request->input('dataPosi');
+        $horaPosi  = $request->input('horaPosi');
 
         $retorno = array();
         $validator = Validator::make(

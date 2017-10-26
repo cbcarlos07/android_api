@@ -24,7 +24,7 @@ Route::get('/listaTencao', "GeralController@getTencao" );
 Route::get('/listaNvEcon', "GeralController@getNvEcon" );
 Route::get('/listaBTus', "GeralController@getBTU" );
 Route::get('/listaAllAr', "GeralController@getAllAr" );
-Route::get('/listaServPen', "GeralController@getServPen" );
+Route::post('/listaServPen', "GeralController@getServPen" );
 Route::get('/image/{img}', "GeralController@getImg" );
 Route::post('/login', "GeralController@getUserByEmailAndPasswordAndMatricula" );
 Route::post('/retornaArCli', "GeralController@getArCli" );

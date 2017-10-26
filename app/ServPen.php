@@ -9,4 +9,7 @@ class ServPen extends Model
     protected $table = "serv_pen";
     protected $primaryKey = "id_serv_pen";
     public $timestamps = false;
+    /*public function cliente(){
+        return $this->belongsTo('App\Cliente', 'cliente','id_cli');
+    }*/
 }
