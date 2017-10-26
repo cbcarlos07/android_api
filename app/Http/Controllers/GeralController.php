@@ -129,7 +129,7 @@ class GeralController extends Controller
                 //$objeto = ServPen::all();
 
             }else{
-                $sql = "SELECT id_serv_pen, cliente, complemento, serv_pen.ender, 
+              /*  $sql = "SELECT id_serv_pen, cliente, complemento, serv_pen.ender,
                                cep, lotacionamento, statusServ,latitude, longitude,
                                date_format(data_serv,'%d/%m/%Y') as data_serv, hora_serv,descriCliProblem, descriTecniProblem, descriCliRefrigera,
                                nome, tipo, celular, fone_fixo, codRefriCli 
@@ -137,7 +137,7 @@ class GeralController extends Controller
                         WHERE id_cli=cliente 
                           AND statusServ LIKE ? AND MatriFuncTec LIKE ?
                         ORDER BY `serv_pen`.`data_serv` ASC";
-                $objeto = DB::select( $sql, array( $status, $matriFunc ) );
+                $objeto = DB::select( $sql, array( $status, $matriFunc ) );*/
                 /*$objeto = ServPen::join( 'clientes', 'cliente', '=', 'id_cli' )
                     ->select('id_serv_pen','cliente','complemento', 'serv_pen.ender', 'cep','lotacionamento',
                         'statusServ', 'latitude','longitude',DB::raw('DATE_FORMAT(data_serv, "%d/%m/%Y") as data_serv'),
@@ -149,20 +149,15 @@ class GeralController extends Controller
 
                     ])
                     ->get();*/
-              /*  $objeto = ServPen::with('clientes')
-                    ->select('id_serv_pen','cliente','complemento', 'serv_pen.ender', 'cep','lotacionamento',
+                $objeto = ServPen::with('clientes')
+                    ->select('id_serv_pen','cliente','complemento', 'serv_pen.ender','lotacionamento',
                         'statusServ', 'latitude','longitude',DB::raw('DATE_FORMAT(data_serv, "%d/%m/%Y") as data_serv'),
-                        'hora_serv', 'descriCliProblem', 'descriTecniProblem','descriCliRefrigera', 'nome', 'tipo','celular',
-                        'fone_fixo','codRefriCli')
-                    ->whereColumn([
-                        ['statusServ',  $status],
-                        ['MatriFuncTec',  $matriFunc]
-
-                    ])
-                    ->get();*/
+                        'hora_serv', 'descriCliProblem', 'descriTecniProblem','descriCliRefrigera', 'codRefriCli')
+                    ->where('statusServ',$status)
+                    ->get();
                 //$objeto = ServPen::all();
             }
-
+           // echo $objeto;
             if( sizeof( $objeto ) > 0 ){
                 foreach ( $objeto as $item) {
 
@@ -170,21 +165,21 @@ class GeralController extends Controller
                         "uid"                => $item->id_serv_pen,
                         "latitude"           => $item->latitude,
                         "longitude"          => $item->longitude,
-                        "cliente"            => $item->cliente,
+                        "cliente"            => $item->cli,
                         "lotacionamento"     => $item->lotacionamento,
                         "ender"              => $item->ender,
                         "complemento"        => $item->complemento,
-                        "cep"                => $item->cep,
+                        "cep"                => $item->clientes->cep,
                         "data_serv"          => $item->data_serv,
                         "hora_serv"          => $item->hora_serv,
                         "descriCliProblem"   => $item->descriCliProblem,
                         "descriTecniProblem" => $item->descriTecniProblem,
                         "descriCliRefrigera" => $item->descriCliRefrigera,
                         "statusServ"         => $item->statusServ,
-                        "nome"               => $item->nome,
-                        "tipo"               => $item->tipo,
-                        "fone1"              => $item->celular,
-                        "fone2"              => $item->fone_fixo,
+                        "nome"               => $item->clientes->nome,
+                        "tipo"               => $item->clientes->tipo,
+                        "fone1"              => $item->clientes->celular,
+                        "fone2"              => $item->clientes->fone_fixo,
                         "id_refriCli"        => $item->codRefriCli,
                     );
 
