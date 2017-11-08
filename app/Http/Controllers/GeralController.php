@@ -245,29 +245,21 @@ class GeralController extends Controller
             $user_func = UserFunc::where('email', $email)
                 ->orWhere('matricula', $matricula)
                 ->get();
+            
+            //var_dump( $user_func );
 
             //echo sizeof( $user_func );
             if( sizeof( $user_func ) > 0 ){
 
-                $salt = "";
-                $encrypted_password = "";
-                $id         = 0;
-                $nome       = "";
-                $email      = "";
-                $created_at = "";
-                $updated_at = "";
+                $salt               = $user_func[0]->salt;
+                $encrypted_password = $user_func[0]->encrypted_password;
+                $id         = $user_func[0]->unique_id;
+                $nome       = $user_func[0]->name;
+                $email      = $user_func[0]->email;
+                $matricula  = $user_func[0]->matricula;
+                $created_at = $user_func[0]->created_at;
+                $updated_at = $user_func[0]->updated_at;
 
-                foreach ( $user_func as $user ){
-                    $salt               = $user->salt;
-                    $encrypted_password = $user->encrypted_password;
-                    $id                 = $user->unique_id;
-                    $nome               = $user->name;
-                    $email              = $user->email;
-                    $matricula          = $user->matricula;
-                    $created_at         = $user->created_at;
-                    $updated_at         = $user->updated_at;
-
-                }
 
 
                 $hash = $this->checkhashSSHA( $salt, $pwd );
